@@ -93,7 +93,7 @@ def getTodaysTasks(file_path):
     today_index = date_row[date_row == today].index
 
     if today_index.empty:
-        return "Today's date not found in the schedule."
+        return None
 
     task_index = today_index[0]  # Get the first occurrence
 
