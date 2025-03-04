@@ -127,5 +127,5 @@ if __name__ == '__main__':
     if huistaken:
         send_message_sync(huistaken)
 
-    send_message_sync(f"Onze afwasheld van vandaag is {getTodaysDishWasher()}. Zet hem op! 🍽️🧼")
+    send_message_sync(f"**{getTodaysDishWasher()}** is onze afwasheld van vandaag. Zet hem op! 🍽️🧼")
     
