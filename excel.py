@@ -111,7 +111,7 @@ def getTodaysTasks(file_path):
 
 async def send_telegram_message(message):
     bot = Bot(token=BOT_TOKEN)
-    await bot.send_message(chat_id=CHAT_ID, text=message)
+    await bot.send_message(chat_id=CHAT_ID, text=message, parse_mode="HTML")
 
 def send_message_sync(message):
     asyncio.run(send_telegram_message(message))
@@ -127,5 +127,5 @@ if __name__ == '__main__':
     if huistaken:
         send_message_sync(huistaken)
 
-    send_message_sync(f"**{getTodaysDishWasher()}** is onze afwasheld van vandaag. Zet hem op! 🍽️🧼")
+    send_message_sync(f"<b>{getTodaysDishWasher()}</b> is onze afwasheld van vandaag. Zet hem op! 🍽️🧼")
     
