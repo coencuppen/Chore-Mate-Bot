@@ -4,6 +4,7 @@ import pandas as pd
 from datetime import datetime, timedelta
 from telegram import Bot
 import asyncio
+import quote
 
 def read_config(file_path):
     config = {}
@@ -106,7 +107,9 @@ def getTodaysTasks(file_path):
         task = row[task_index]  # Task for today's date
         result += f"{person}: {task}\n"
 
-    result += "\nSucces met de taken iedereen! 🚀"
+    result += "\nSucces met de taken iedereen! 🚀\n"
+
+    result += quote.getRandomQuote()
 
     return result.strip()
 
