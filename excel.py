@@ -145,5 +145,5 @@ if __name__ == '__main__':
 
     print("Afwasheld van vandaag:")
     print(getTodaysDishWasher())
-    #send_message_sync(f"<b>{getTodaysDishWasher()}</b> is onze afwasheld van vandaag. Zet hem op! 🍽️🧼")
+    send_message_sync(f"<b>{getTodaysDishWasher()}</b> is onze afwasheld van vandaag. Zet hem op! 🍽️🧼")
     
