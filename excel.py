@@ -1,7 +1,7 @@
 import os
 import requests
 import pandas as pd
-from datetime import datetime
+from datetime import datetime, timedelta
 from telegram import Bot
 import asyncio
 
@@ -54,29 +54,30 @@ def capitalizeFirstLetter(s):
 
 
 def getTodaysDishWasher():
-    # Read the Excel file
+    # Lees het Excel-bestand
     df = pd.read_excel(afwasRoosterPath, engine='openpyxl')
 
-    # Strip column names in case of leading/trailing spaces
+    # Strip kolomnamen voor het geval er spaties zijn
     df.columns = df.columns.str.strip()
 
-    # Ensure the 'DAG' column is treated as strings with stripped spaces
-    df['DAG'] = df['DAG'].astype(str).str.strip()
+    # Controleer of de kolom 'DAG' een datetime-object is, zo niet, converteer het
+    if not pd.api.types.is_datetime64_any_dtype(df['DAG']):
+        df['DAG'] = pd.to_datetime(df['DAG'], errors='coerce', dayfirst=True)
 
-    # Get today's date in the expected format
-    today = datetime.now().strftime('%Y-%m-%d 00:00:00')
+    # Haal de datum van vandaag op en zet het in hetzelfde formaat als de DataFrame
+    today = pd.to_datetime(datetime.today().date())
 
-    # Filter the dataframe for today's date
+    # Filter de DataFrame op de datum van vandaag
     today_row = df[df['DAG'] == today]
 
     if not today_row.empty:
-        # Get the name of the person
-        person = today_row['PERSOON'].values[0]
+        # Haal de naam van de persoon op
+        person = today_row.iloc[0]['PERSOON']
         print(f"Today's dishwasher: {person}")
-        return capitalizeFirstLetter(person)
+        return person.strip().capitalize()  # Zorgt voor nette hoofdletters
     else:
         print("No entry found for today's date.")
-    
+
     return None
 
 def getTodaysTasks(file_path):
@@ -116,10 +117,24 @@ async def send_telegram_message(message):
 def send_message_sync(message):
     asyncio.run(send_telegram_message(message))
 
+def check_and_extend_schedule():
+    df = pd.read_excel(afwasRoosterPath, engine='openpyxl')
+    df['DAG'] = pd.to_datetime(df['DAG'], errors='coerce')
+    last_date = df['DAG'].max()
+    seven_days_from_now = datetime.now() + timedelta(days=21)
+    
+    if pd.isna(last_date) or last_date < seven_days_from_now:
+        new_dates = [(last_date + timedelta(days=i)).strftime('%Y-%m-%d 00:00:00') for i in range(1, 31)]
+        
+        
+        
+        print("Extended schedule with 30 new dates.")
+
 
 def init():
-    getExcelFiles(huistakenURL, huistaakRoosterPath, False)
-    getExcelFiles(afwasRoosterURL, afwasRoosterPath, False)
+    getExcelFiles(huistakenURL, huistaakRoosterPath, True)
+    getExcelFiles(afwasRoosterURL, afwasRoosterPath, True)
+    check_and_extend_schedule()
 
 if __name__ == '__main__':
     init()
@@ -127,5 +142,8 @@ if __name__ == '__main__':
     if huistaken:
         send_message_sync(huistaken)
 
-    send_message_sync(f"<b>{getTodaysDishWasher()}</b> is onze afwasheld van vandaag. Zet hem op! 🍽️🧼")
+
+    print("Afwasheld van vandaag:")
+    print(getTodaysDishWasher())
+    #send_message_sync(f"<b>{getTodaysDishWasher()}</b> is onze afwasheld van vandaag. Zet hem op! 🍽️🧼")
     
