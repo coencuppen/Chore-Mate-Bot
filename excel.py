@@ -107,9 +107,9 @@ def getTodaysTasks(file_path):
         task = row[task_index]  # Task for today's date
         result += f"{person}: {task}\n"
 
-    result += "\nSucces met de taken iedereen! 🚀\n"
+    result += "\nSucces met de taken iedereen! 🚀\n\n"
 
-    result += quote.getRandomQuote()
+    result += quote.getQuote()
 
     return result.strip()
 
