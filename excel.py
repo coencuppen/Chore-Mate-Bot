@@ -127,6 +127,8 @@ def check_and_extend_schedule():
     seven_days_from_now = datetime.now() + timedelta(days=21)
     
     if pd.isna(last_date) or last_date < seven_days_from_now:
+        send_message_sync("Het afwasrooster loopt bijna af")
+        return
         new_dates = [(last_date + timedelta(days=i)).strftime('%Y-%m-%d 00:00:00') for i in range(1, 31)]
         
         
@@ -149,4 +151,5 @@ if __name__ == '__main__':
     print("Afwasheld van vandaag:")
     print(getTodaysDishWasher())
     send_message_sync(f"<b>{getTodaysDishWasher()}</b> is onze afwasheld van vandaag. Zet hem op! 🍽️🧼")
+    check_and_extend_schedule()
     
