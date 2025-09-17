@@ -139,7 +139,6 @@ def check_and_extend_schedule():
 def init():
     getExcelFiles(huistakenURL, huistaakRoosterPath, True)
     getExcelFiles(afwasRoosterURL, afwasRoosterPath, True)
-    check_and_extend_schedule()
 
 if __name__ == '__main__':
     init()
