@@ -81,6 +81,40 @@ def getTodaysDishWasher():
 
     return None
 
+def getThursdayTasks(file_path):
+    df = pd.read_excel(file_path, engine='openpyxl', header=None, sheet_name=0)
+
+    last_monday = (datetime.now() - timedelta(days=3)).strftime('%Y-%m-%d 00:00:00')
+
+    if last_monday is None:
+        return None
+    
+    # Extract the date row (assumed to be the first row)
+    date_row = df.iloc[0].astype(str)  # Convert all values to string for comparison
+
+        # Find the column index for today's date
+    today_index = date_row[date_row == last_monday].index
+
+    task_index = today_index[0]  # Get the first occurrence
+    
+    result = f"Taken voor vandaag:\n"
+
+
+    # Iterate through all rows, starting from the second row (index 1) to get names and tasks
+    for index, row in df.iloc[1:].iterrows():
+        person = row.iloc[0]  # First column contains names
+        task = row[task_index]  # Task for today's date
+
+        if(task == "keuken" or task == "woonkamer" or task == "was & glas"):
+            result += f"{person}: {task}\n"
+
+    result += "\nSucces met de taken iedereen! 🚀\n\n"
+
+    result += quote.getQuote()
+
+    return result.strip()
+
+
 def getTodaysTasks(file_path):
     # Load the Excel file into a DataFrame without headers
     df = pd.read_excel(file_path, engine='openpyxl', header=None, sheet_name=0)
@@ -124,7 +158,7 @@ def check_and_extend_schedule():
     df = pd.read_excel(afwasRoosterPath, engine='openpyxl')
     df['DAG'] = pd.to_datetime(df['DAG'], errors='coerce')
     last_date = df['DAG'].max()
-    seven_days_from_now = datetime.now() + timedelta(days=21)
+    seven_days_from_now = datetime.now() + timedelta(days=7)
     
     if pd.isna(last_date) or last_date < seven_days_from_now:
         send_message_sync("Het afwasrooster loopt bijna af")
@@ -142,7 +176,12 @@ def init():
 
 if __name__ == '__main__':
     init()
+
     huistaken = getTodaysTasks(huistaakRoosterPath)
+    if huistaken:
+        send_message_sync(huistaken)
+
+    huistaken = getThursdayTasks(huistaakRoosterPath)
     if huistaken:
         send_message_sync(huistaken)
 
