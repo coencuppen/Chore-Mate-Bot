@@ -92,8 +92,14 @@ def getThursdayTasks(file_path):
     # Extract the date row (assumed to be the first row)
     date_row = df.iloc[0].astype(str)  # Convert all values to string for comparison
 
+    if date_row.empty:
+        return None
+
         # Find the column index for today's date
     today_index = date_row[date_row == last_monday].index
+
+    if today_index.empty:
+        return None
 
     task_index = today_index[0]  # Get the first occurrence
     
@@ -108,7 +114,7 @@ def getThursdayTasks(file_path):
         if(task == "keuken" or task == "woonkamer" or task == "was & glas"):
             result += f"{person}: {task}\n"
 
-    result += "\nSucces met de taken iedereen! 🚀\n\n"
+    result += "\nSucces met de taken iedereen!\n\n"
 
     result += quote.getQuote()
 
@@ -141,7 +147,7 @@ def getTodaysTasks(file_path):
         task = row[task_index]  # Task for today's date
         result += f"{person}: {task}\n"
 
-    result += "\nSucces met de taken iedereen! 🚀\n\n"
+    result += "\nSucces met de taken iedereen!\n\n"
 
     result += quote.getQuote()
 
@@ -152,6 +158,8 @@ async def send_telegram_message(message):
     await bot.send_message(chat_id=CHAT_ID, text=message, parse_mode="HTML")
 
 def send_message_sync(message):
+    print(message)
+    return
     asyncio.run(send_telegram_message(message))
 
 def check_and_extend_schedule():
