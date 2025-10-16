@@ -158,8 +158,6 @@ async def send_telegram_message(message):
     await bot.send_message(chat_id=CHAT_ID, text=message, parse_mode="HTML")
 
 def send_message_sync(message):
-    print(message)
-    return
     asyncio.run(send_telegram_message(message))
 
 def check_and_extend_schedule():
